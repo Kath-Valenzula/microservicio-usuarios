@@ -1,21 +1,17 @@
 package cl.duoc.dsy2205.microservicio_usuarios.service;
 
+import cl.duoc.dsy2205.microservicio_usuarios.entity.Usuario;
+
 import java.util.List;
 import java.util.Optional;
 
-import cl.duoc.dsy2205.microservicio_usuarios.entity.Usuario;
-
 public interface UsuarioService {
 
-    List<Usuario> listarTodos();
+    List<Usuario> findAll();
 
-    Optional<Usuario> buscarPorId(Long id);
+    Optional<Usuario> findById(Long id);
 
-    Usuario crear(Usuario nuevo);
+    Usuario save(Usuario usuario);
 
-    Optional<Usuario> actualizar(Long id, Usuario datosActualizados);
-
-    boolean eliminar(Long id);
-
-    Optional<Usuario> login(String email, String password);
+    void deleteById(Long id);
 }

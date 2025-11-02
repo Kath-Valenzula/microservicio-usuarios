@@ -1,61 +1,37 @@
 package cl.duoc.dsy2205.microservicio_usuarios.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import cl.duoc.dsy2205.microservicio_usuarios.entity.Usuario;
 import cl.duoc.dsy2205.microservicio_usuarios.repository.UsuarioRepository;
 import cl.duoc.dsy2205.microservicio_usuarios.service.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
-@Transactional
 public class UsuarioServiceImpl implements UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
-
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Override
-    public List<Usuario> listarTodos() {
+    public List<Usuario> findAll() {
         return usuarioRepository.findAll();
     }
 
     @Override
-    public Optional<Usuario> buscarPorId(Long id) {
+    public Optional<Usuario> findById(Long id) {
         return usuarioRepository.findById(id);
     }
 
     @Override
-    public Usuario crear(Usuario nuevo) {
-        return usuarioRepository.save(nuevo);
+    public Usuario save(Usuario usuario) {
+        return usuarioRepository.save(usuario);
     }
 
     @Override
-    public Optional<Usuario> actualizar(Long id, Usuario datosActualizados) {
-        return usuarioRepository.findById(id).map(existing -> {
-            existing.setNombreCompleto(datosActualizados.getNombreCompleto());
-            existing.setEmail(datosActualizados.getEmail());
-            existing.setPassword(datosActualizados.getPassword());
-            existing.setRol(datosActualizados.getRol());
-            return usuarioRepository.save(existing);
-        });
-    }
-
-    @Override
-    public boolean eliminar(Long id) {
-        return usuarioRepository.findById(id).map(usuario -> {
-            usuarioRepository.delete(usuario);
-            return true;
-        }).orElse(false);
-    }
-
-    @Override
-    public Optional<Usuario> login(String email, String password) {
-        return usuarioRepository.findByEmailAndPassword(email, password);
+    public void deleteById(Long id) {
+        usuarioRepository.deleteById(id);
     }
 }
