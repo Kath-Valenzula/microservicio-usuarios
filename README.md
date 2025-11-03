@@ -62,7 +62,3 @@ curl -X PUT "http://localhost:8080/api/usuarios/1" ^
   -d "{`"nombre`":`"Juan P.`",`"email`":`"juan.p@dominio.cl`"}"
 curl -X DELETE "http://localhost:8080/api/usuarios/1"
 ```
-
-```
-::contentReference[oaicite:0]{index=0}
-```
