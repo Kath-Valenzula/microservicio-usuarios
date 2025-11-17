@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import cl.duoc.dsy2205.microservicio_usuarios.dto.UsuarioDTO;
 import cl.duoc.dsy2205.microservicio_usuarios.entity.Usuario;
+import cl.duoc.dsy2205.microservicio_usuarios.mapper.UsuarioMapper;
 import cl.duoc.dsy2205.microservicio_usuarios.service.UsuarioService;
 import jakarta.validation.Valid;
 
@@ -34,38 +36,40 @@ public class UsuarioController {
 
     // READ ALL
     @GetMapping
-    public ResponseEntity<List<Usuario>> getAll() {
+    public ResponseEntity<List<UsuarioDTO>> getAll() {
         log.info("GET /api/usuarios");
-        return ResponseEntity.ok(usuarioService.findAll());
+        var list = usuarioService.findAll();
+        var dtoList = list.stream().map(UsuarioMapper::toDto).toList();
+        return ResponseEntity.ok(dtoList);
     }
 
     // READ BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getById(@PathVariable Long id) {
-        return usuarioService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UsuarioDTO> getById(@PathVariable Long id) {
+        Usuario u = usuarioService.findById(id).orElse(null);
+        return ResponseEntity.ok(UsuarioMapper.toDto(u));
     }
 
     // CREATE
     @PostMapping
-    public ResponseEntity<Usuario> create(@Valid @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> create(@Valid @RequestBody UsuarioDTO usuarioDto) {
+        Usuario usuario = UsuarioMapper.toEntity(usuarioDto);
         log.info("POST /api/usuarios - creating usuario: {}", usuario.getNombre());
-    Usuario nuevo = usuarioService.save(usuario);
-    Long id = Objects.requireNonNull(nuevo.getIdUsuario(), "Created usuario id is null");
-    URI location = Objects.requireNonNull(URI.create("/api/usuarios/" + id));
-    return ResponseEntity.created(location).body(nuevo);
+        Usuario nuevo = usuarioService.save(usuario);
+        Long id = Objects.requireNonNull(nuevo.getIdUsuario(), "Created usuario id is null");
+        URI location = Objects.requireNonNull(URI.create("/api/usuarios/" + id));
+        return ResponseEntity.created(location).body(UsuarioMapper.toDto(nuevo));
     }
 
     // UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> update(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
-        return usuarioService.findById(id)
-                .map(existing -> {
-                    usuario.setIdUsuario(id);
-                    return ResponseEntity.ok(usuarioService.save(usuario));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UsuarioDTO> update(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDto) {
+        // Validar existencia mediante el servicio (lanzará ResourceNotFoundException si no existe)
+        usuarioService.findById(id);
+        Usuario usuario = UsuarioMapper.toEntity(usuarioDto);
+        usuario.setIdUsuario(id);
+        Usuario updated = usuarioService.save(usuario);
+        return ResponseEntity.ok(UsuarioMapper.toDto(updated));
     }
 
     // DELETE

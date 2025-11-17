@@ -31,7 +31,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Optional<Usuario> findById(Long id) {
         Objects.requireNonNull(id, "id debe no ser null");
-        return usuarioRepository.findById(id);
+        Usuario u = usuarioRepository.findById(id)
+                .orElseThrow(() -> new cl.duoc.dsy2205.microservicio_usuarios.exception.ResourceNotFoundException("Usuario no encontrado id=" + id));
+        return Optional.of(u);
     }
 
     @Override

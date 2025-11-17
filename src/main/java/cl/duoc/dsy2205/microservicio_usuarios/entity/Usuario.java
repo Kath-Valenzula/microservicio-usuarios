@@ -1,7 +1,16 @@
 package cl.duoc.dsy2205.microservicio_usuarios.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "USUARIOS")
@@ -12,15 +21,23 @@ public class Usuario {
     @Column(name = "ID_USUARIO")
     private Long idUsuario;
 
+    @NotNull
+    @Size(max = 100)
     @Column(name = "NOMBRE", nullable = false, length = 100)
     private String nombre;
 
+    @NotNull
+    @Size(max = 100)
     @Column(name = "APELLIDO", nullable = false, length = 100)
     private String apellido;
 
+    @NotNull
+    @Email
+    @Size(max = 150)
     @Column(name = "CORREO", nullable = false, length = 150, unique = true)
     private String correo;
 
+    @Size(max = 20)
     @Column(name = "TELEFONO", length = 20)
     private String telefono;
 
