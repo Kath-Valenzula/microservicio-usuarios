@@ -7,10 +7,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import jakarta.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
+
+    private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
 
     private final UsuarioService usuarioService;
 
@@ -21,6 +27,7 @@ public class UsuarioController {
     // READ ALL
     @GetMapping
     public ResponseEntity<List<Usuario>> getAll() {
+        log.info("GET /api/usuarios");
         return ResponseEntity.ok(usuarioService.findAll());
     }
 
@@ -34,14 +41,15 @@ public class UsuarioController {
 
     // CREATE
     @PostMapping
-    public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) {
+    public ResponseEntity<Usuario> create(@Valid @RequestBody Usuario usuario) {
+        log.info("POST /api/usuarios - creating usuario: {}", usuario.getNombre());
         Usuario nuevo = usuarioService.save(usuario);
         return ResponseEntity.created(URI.create("/api/usuarios/" + nuevo.getIdUsuario())).body(nuevo);
     }
 
     // UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> update(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<Usuario> update(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
         return usuarioService.findById(id)
                 .map(existing -> {
                     usuario.setIdUsuario(id);
@@ -53,6 +61,7 @@ public class UsuarioController {
     // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        log.info("DELETE /api/usuarios/{}", id);
         usuarioService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
